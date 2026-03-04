@@ -30,5 +30,7 @@ export default {
   'gt1d': '> 1 μέρα',
   'hour': 'ωρ',
   'minute': 'λ',
-  'second': 'δ'
+  'second': 'δ',
+  'retry': 'Retry',
+  'close': 'Close',
 }

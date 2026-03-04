@@ -104,4 +104,6 @@ export default {
   'update-and-install': 'Download & Install',
   'is-latest-version': 'Already up to date',
   'check-update-failed': 'Failed to check for updates',
+  'update-download-complete': 'Download complete, ready to install',
+  'restart-now': 'Restart Now',
 }

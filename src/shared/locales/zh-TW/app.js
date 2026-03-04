@@ -30,5 +30,7 @@ export default {
   'gt1d': '超過一天',
   'hour': '時',
   'minute': '分',
-  'second': '秒'
+  'second': '秒',
+  'retry': '重試',
+  'close': '關閉'
 }

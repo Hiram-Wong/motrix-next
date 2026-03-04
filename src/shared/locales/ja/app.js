@@ -31,4 +31,6 @@ export default {
   'minute': '分',
   'second': '秒',
   'show': 'Show Motrix Next',
+  'retry': 'Retry',
+  'close': 'Close',
 }

@@ -28,16 +28,13 @@ import {
 import { useAppMessage } from '@/composables/useAppMessage'
 import {
   SyncOutline, DiceOutline, FolderOpenOutline, LinkOutline,
-  CloudDownloadOutline,
 } from '@vicons/ionicons5'
-import { check } from '@tauri-apps/plugin-updater'
 
 const { t } = useI18n()
 const preferenceStore = usePreferenceStore()
 const taskStore = useTaskStore()
 const message = useAppMessage()
 const dialog = useDialog()
-const checking = ref(false)
 
 const DEFAULT_TRACKER_SOURCE = [
   NGOSANG_TRACKERS_BEST_URL_CDN,
@@ -106,8 +103,6 @@ function buildForm() {
     preferenceStore.updateAndSave({ rpcSecret })
   }
   return {
-    autoCheckUpdate: c.autoCheckUpdate !== false,
-    lastCheckUpdateTime: (c.lastCheckUpdateTime as number) || 0,
     proxy: {
       enable: !!proxy.enable,
       server: (proxy.server as string) || '',
@@ -167,37 +162,6 @@ async function handleSyncTracker() {
     message.error(t('preferences.bt-tracker-sync-failed'))
   } finally {
     syncingTracker.value = false
-  }
-}
-
-async function handleCheckUpdate() {
-  if (checking.value) return
-  checking.value = true
-  try {
-    const update = await check()
-    form.value.lastCheckUpdateTime = Date.now()
-    if (update?.available) {
-      dialog.info({
-        title: t('preferences.update-available-title') || 'Update Available',
-        content: `${update.version}`,
-        positiveText: t('preferences.update-and-install') || 'Download & Install',
-        negativeText: t('app.cancel') || 'Cancel',
-        onPositiveClick: async () => {
-          try {
-            await update.downloadAndInstall()
-            relaunch()
-          } catch (e) {
-            message.error(String(e))
-          }
-        },
-      })
-    } else {
-      message.success(t('preferences.is-latest-version'))
-    }
-  } catch (e) {
-    message.error(t('preferences.check-update-failed'))
-  } finally {
-    checking.value = false
   }
 }
 
@@ -293,22 +257,6 @@ onMounted(() => {
 <template>
   <div class="preference-form-wrapper">
     <NForm label-placement="left" label-align="left" label-width="240px" size="small" class="form-preference">
-
-      <NDivider title-placement="left">{{ t('preferences.auto-update') }}</NDivider>
-      <NFormItem :show-label="false">
-        <NSpace vertical>
-          <NSpace align="center">
-            <NCheckbox v-model:checked="form.autoCheckUpdate">{{ t('preferences.auto-check-update') }}</NCheckbox>
-            <NButton size="small" :loading="checking" @click="handleCheckUpdate">
-              <template #icon><NIcon :size="14"><CloudDownloadOutline /></NIcon></template>
-              {{ t('app.check-updates-now') || 'Check for Updates' }}
-            </NButton>
-          </NSpace>
-          <div v-if="form.lastCheckUpdateTime" class="info-text">
-            {{ t('preferences.last-check-update-time') }}: {{ new Date(form.lastCheckUpdateTime).toLocaleString() }}
-          </div>
-        </NSpace>
-      </NFormItem>
 
       <NDivider title-placement="left">{{ t('preferences.proxy') }}</NDivider>
       <NFormItem :label="t('preferences.enable-proxy')">

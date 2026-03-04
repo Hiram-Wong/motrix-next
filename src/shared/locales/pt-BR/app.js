@@ -30,5 +30,7 @@ export default {
   'gt1d': '> 1 dia',
   'hour': 'h',
   'minute': 'm',
-  'second': 's'
+  'second': 's',
+  'retry': 'Retry',
+  'close': 'Close',
 }

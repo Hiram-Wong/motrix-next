@@ -22,6 +22,7 @@
     "os:default",
     "fs:default",
     "fs:allow-read-file",
-    "autostart:default"
+    "autostart:default",
+    "updater:default"
   ]
 }

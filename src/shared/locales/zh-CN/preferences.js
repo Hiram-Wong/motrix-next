@@ -106,4 +106,6 @@ export default {
   'update-and-install': '下载并安装',
   'is-latest-version': '已是最新版本',
   'check-update-failed': '检查更新失败',
+  'update-download-complete': '下载完成，准备安装',
+  'restart-now': '立即重启'
 }

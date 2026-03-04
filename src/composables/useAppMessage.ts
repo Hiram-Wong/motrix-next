@@ -1,8 +1,9 @@
-import { useMessage, type MessageOptions } from 'naive-ui'
+import { useMessage, type MessageOptions, type MessageReactive } from 'naive-ui'
 
 const DEFAULTS: MessageOptions = {
     closable: true,
     duration: 3000,
+    keepAliveOnHover: true,
 }
 
 export function useAppMessage() {

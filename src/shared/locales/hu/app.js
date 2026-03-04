@@ -30,5 +30,7 @@ export default {
   'gt1d': '> 1 nap',
   'hour': 'ó',
   'minute': 'p',
-  'second': 'm'
+  'second': 'm',
+  'retry': 'Retry',
+  'close': 'Close',
 }

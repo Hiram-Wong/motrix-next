@@ -30,5 +30,7 @@ export default {
   'gt1d': '> 1 วัน',
   'hour': 'ชม.',
   'minute': 'น.',
-  'second': 'วิ'
+  'second': 'วิ',
+  'retry': 'Retry',
+  'close': 'Close',
 }

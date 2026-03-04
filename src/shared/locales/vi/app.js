@@ -30,5 +30,7 @@ export default {
   'gt1d': '> 1 ngày',
   'hour': ' giờ',
   'minute': ' phút',
-  'second': ' giây'
+  'second': ' giây',
+  'retry': 'Retry',
+  'close': 'Close',
 }

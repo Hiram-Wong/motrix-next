@@ -104,4 +104,6 @@ export default {
   'update-and-install': '下載並安裝',
   'is-latest-version': '已是最新版本',
   'check-update-failed': '檢查更新失敗',
+  'update-download-complete': '下載完成，準備安裝',
+  'restart-now': '立即重啟'
 }

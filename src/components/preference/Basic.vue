@@ -11,9 +11,10 @@ import {
   NForm, NFormItem, NInput, NInputNumber, NSelect, NCheckbox, NSwitch,
   NButton, NSpace, NDivider, NInputGroup, useDialog
 } from 'naive-ui'
-import { FolderOpenOutline } from '@vicons/ionicons5'
+import { FolderOpenOutline, CloudDownloadOutline } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
 import { useAppMessage } from '@/composables/useAppMessage'
+import UpdateDialog from '@/components/preference/UpdateDialog.vue'
 
 const { t } = useI18n()
 const preferenceStore = usePreferenceStore()
@@ -21,6 +22,7 @@ const preferenceStore = usePreferenceStore()
 const message = useAppMessage()
 const dialog = useDialog()
 const defaultDownloadDir = ref('')
+const updateDialogRef = ref<InstanceType<typeof UpdateDialog> | null>(null)
 
 function buildForm() {
   const config = (preferenceStore.config || {}) as Record<string, unknown>
@@ -29,6 +31,8 @@ function buildForm() {
   const pauseMetadata = !!config.pauseMetadata
   const btAutoDownloadContent = followTorrent && followMetalink && !pauseMetadata
   return {
+    autoCheckUpdate: config.autoCheckUpdate !== false,
+    lastCheckUpdateTime: (config.lastCheckUpdateTime as number) || 0,
     dir: (config.dir as string) || defaultDownloadDir.value,
     locale: (config.locale as string) || 'en-US',
     theme: (config.theme as string) || 'dark',
@@ -196,6 +200,10 @@ function handleReset() {
   loadForm()
 }
 
+function handleCheckUpdate() {
+  updateDialogRef.value?.open()
+}
+
 onMounted(async () => {
   try { defaultDownloadDir.value = await downloadDir() } catch {}
   loadForm()
@@ -205,6 +213,23 @@ onMounted(async () => {
 <template>
   <div class="preference-form-wrapper">
     <NForm label-placement="left" label-align="left" label-width="240px" size="small" class="form-preference">
+      <NDivider title-placement="left">{{ t('preferences.auto-update') }}</NDivider>
+      <NFormItem :show-label="false">
+        <NSpace vertical>
+          <NSpace align="center">
+            <NCheckbox v-model:checked="form.autoCheckUpdate">{{ t('preferences.auto-check-update') }}</NCheckbox>
+            <NButton size="small" @click="handleCheckUpdate">
+              <template #icon><NIcon :size="14"><CloudDownloadOutline /></NIcon></template>
+              {{ t('app.check-updates-now') }}
+            </NButton>
+          </NSpace>
+          <div v-if="form.lastCheckUpdateTime" class="info-text">
+            {{ t('preferences.last-check-update-time') }}: {{ new Date(form.lastCheckUpdateTime).toLocaleString() }}
+          </div>
+        </NSpace>
+      </NFormItem>
+      <UpdateDialog ref="updateDialogRef" />
+
       <NDivider title-placement="left">{{ t('preferences.appearance') }}</NDivider>
       <NFormItem :label="t('preferences.appearance')">
         <NSelect v-model:value="form.theme" :options="themeOptions" style="width: 200px;" />
