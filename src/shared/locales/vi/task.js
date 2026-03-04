@@ -66,7 +66,7 @@ export default {
   'delete-task': 'Xóa tác vụ',
   'delete-selected-tasks': 'Xóa những tác vụ được chọn',
   'delete-task-confirm': 'Bạn có chắc chắn muốn xóa tác vụ tải xuống "{{taskName}}"?',
-  'batch-delete-task-confirm': 'Bạn có chắc chắn muốn xóa {{Count}} tác vụ tải xuống không?',
+  'batch-delete-task-confirm': 'Bạn có chắc chắn muốn xóa {{count}} tác vụ tải xuống không?',
   'delete-task-label': 'Xóa kèm tập tin',
   'delete-task-success': 'Xóa tác vụ thành công "{{taskName}}"',
   'delete-task-fail': 'Xóa tác vụ thất bại "{{taskName}}"',

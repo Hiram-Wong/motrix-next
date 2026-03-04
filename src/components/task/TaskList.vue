@@ -11,6 +11,7 @@ const emit = defineEmits<{
   'delete-record': [task: Record<string, unknown>]
   'copy-link': [task: Record<string, unknown>]
   'show-info': [task: Record<string, unknown>]
+  folder: [task: Record<string, unknown>]
 }>()
 
 const { t } = useI18n()
@@ -56,6 +57,7 @@ function handleItemClick(task: Record<string, unknown>, event: MouseEvent) {
           @delete-record="emit('delete-record', item as Record<string, unknown>)"
           @copy-link="emit('copy-link', item as Record<string, unknown>)"
           @show-info="emit('show-info', item as Record<string, unknown>)"
+          @folder="emit('folder', item as Record<string, unknown>)"
         />
       </div>
     </TransitionGroup>

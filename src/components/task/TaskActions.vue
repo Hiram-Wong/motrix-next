@@ -67,7 +67,8 @@ function onDeleteAll() {
           if (dir) {
             const name = getTaskName(task as never, { defaultName: '', maxLen: -1 })
             if (name) {
-              const taskDir = dir.endsWith('/') ? dir + name : dir + '/' + name
+              const { join } = await import('@tauri-apps/api/path')
+              const taskDir = await join(dir, name)
               try { await remove(taskDir, { recursive: true }) } catch {}
             }
           }

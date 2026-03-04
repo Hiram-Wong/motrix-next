@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, h, onMounted } from 'vue'
+import { invoke } from '@tauri-apps/api/core'
 import { useI18n } from 'vue-i18n'
 import { usePreferenceStore } from '@/stores/preference'
 import { useTaskStore } from '@/stores/task'
@@ -215,7 +216,7 @@ function handleFactoryReset() {
     negativeText: t('app.no'),
     onPositiveClick: async () => {
       try {
-        await preferenceStore.updateAndSave({})
+        await invoke('factory_reset')
         relaunch()
       } catch {}
     },
@@ -232,6 +233,12 @@ function handleSave() {
     btTracker: convertLineToComma(form.value.btTracker),
   }
   preferenceStore.updateAndSave(data)
+  invoke('save_system_config', {
+    config: {
+      'rpc-listen-port': String(form.value.rpcListenPort),
+      'rpc-secret': form.value.rpcSecret,
+    },
+  }).catch(console.error)
   message.success(t('preferences.save-success-message'))
 }
 

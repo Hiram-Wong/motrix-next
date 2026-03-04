@@ -1,9 +1,10 @@
+mod commands;
 mod engine;
 mod menu;
 mod tray;
-mod commands;
 
 use engine::EngineState;
+use tauri::Emitter;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -37,6 +38,24 @@ pub fn run() {
             let m = menu::build_menu(handle)?;
             app.set_menu(m)?;
             tray::setup_tray(handle)?;
+            app.on_menu_event(|app, event| match event.id().as_ref() {
+                "new-task" => {
+                    let _ = app.emit("menu-event", "new-task");
+                }
+                "open-torrent" => {
+                    let _ = app.emit("menu-event", "open-torrent");
+                }
+                "preferences" => {
+                    let _ = app.emit("menu-event", "preferences");
+                }
+                "release-notes" => {
+                    let _ = app.emit("menu-event", "release-notes");
+                }
+                "report-issue" => {
+                    let _ = app.emit("menu-event", "report-issue");
+                }
+                _ => {}
+            });
             Ok(())
         })
         .run(tauri::generate_context!())

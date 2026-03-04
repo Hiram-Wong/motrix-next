@@ -110,7 +110,7 @@ export default {
   'download-error-message': 'حدث خطأ أثناء تحميل {{taskName}}',
   'download-complete-message': 'اكتمل تحميل {{taskName}}',
   'download-complete-notify': 'اكتمل التحميل',
-  'bt-download-complete-message': 'اكتمل تحميل {{taskName}، وعملية البَذر',
+  'bt-download-complete-message': 'اكتمل تحميل {{taskName}}، وعملية البَذر',
   'bt-download-complete-notify': 'اكتمل تحميل التورنت، وعملية البَذر...',
   'bt-download-complete-tips': 'نصيحة: يمكنك إيقاف التحميل لإنهاء عملية البَذر',
   'bt-stopping-seeding-tip': 'جاري إيقاف عملية البَذر، سيستغرق قطع الاتصال بعض الوقت، الرجاء الانتظار...',

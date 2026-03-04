@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { onMounted, onUnmounted } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { ADD_TASK_TYPE } from '@shared/constants'
 import { getCurrentWebview } from '@tauri-apps/api/webview'
+import { listen } from '@tauri-apps/api/event'
 import AsideBar from '@/components/layout/AsideBar.vue'
 import TaskSubnav from '@/components/layout/TaskSubnav.vue'
 import PreferenceSubnav from '@/components/layout/PreferenceSubnav.vue'
@@ -12,9 +13,14 @@ import Speedometer from '@/components/layout/Speedometer.vue'
 import WindowControls from '@/components/layout/WindowControls.vue'
 import AboutPanel from '@/components/about/AboutPanel.vue'
 import AddTask from '@/components/task/AddTask.vue'
+import { useTaskStore } from '@/stores/task'
+import { openUrl } from '@tauri-apps/plugin-opener'
+import { open as openDialog } from '@tauri-apps/plugin-dialog'
 
 const route = useRoute()
+const router = useRouter()
 const appStore = useAppStore()
+const taskStore = useTaskStore()
 
 const isTaskPage = computed(() => route.path.startsWith('/task'))
 const isPreferencePage = computed(() => route.path.startsWith('/preference'))
@@ -31,6 +37,37 @@ onMounted(async () => {
       if (torrentPaths.length > 0) {
         appStore.showAddTaskDialog(ADD_TASK_TYPE.TORRENT, torrentPaths)
       }
+    }
+  })
+  listen<string>('menu-event', async (event) => {
+    const action = event.payload
+    switch (action) {
+      case 'new-task':
+        appStore.showAddTaskDialog(ADD_TASK_TYPE.URI)
+        break
+      case 'open-torrent': {
+        const selected = await openDialog({
+          multiple: false,
+          filters: [{ name: 'Torrent', extensions: ['torrent'] }],
+        })
+        if (selected) appStore.showAddTaskDialog(ADD_TASK_TYPE.TORRENT, [selected as string])
+        break
+      }
+      case 'preferences':
+        router.push('/preference').catch(() => {})
+        break
+      case 'resume-all':
+        taskStore.resumeAllTask().catch(console.error)
+        break
+      case 'pause-all':
+        taskStore.pauseAllTask().catch(console.error)
+        break
+      case 'release-notes':
+        openUrl('https://github.com/AnInsomniacy/motrix-next/releases').catch(console.error)
+        break
+      case 'report-issue':
+        openUrl('https://github.com/AnInsomniacy/motrix-next/issues').catch(console.error)
+        break
     }
   })
 })

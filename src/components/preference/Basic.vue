@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { usePreferenceStore } from '@/stores/preference'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { open as openDialog } from '@tauri-apps/plugin-dialog'
+import { invoke } from '@tauri-apps/api/core'
 import { downloadDir } from '@tauri-apps/api/path'
 import { extractSpeedUnit } from '@shared/utils'
 import {
@@ -163,6 +164,19 @@ function handleSave() {
   delete data.btAutoDownloadContent
 
   preferenceStore.updateAndSave(data)
+  invoke('save_system_config', {
+    config: {
+      dir: form.value.dir,
+      'max-concurrent-downloads': String(form.value.maxConcurrentDownloads),
+      'max-connection-per-server': String(form.value.maxConnectionPerServer),
+      'max-overall-download-limit': form.value.maxOverallDownloadLimit,
+      'max-overall-upload-limit': form.value.maxOverallUploadLimit,
+      'bt-save-metadata': String(!!form.value.btSaveMetadata),
+      'bt-force-encryption': String(!!form.value.btForceEncryption),
+      'seed-ratio': String(form.value.seedRatio),
+      'seed-time': String(form.value.seedTime),
+    },
+  }).catch(console.error)
   message.success(t('preferences.save-success-message'))
 
   if (newLocale !== prevLocale) {

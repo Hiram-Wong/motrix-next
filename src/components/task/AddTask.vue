@@ -50,7 +50,7 @@ const form = ref({
   referer: '',
   cookie: '',
   allProxy: '',
-  newTaskShowDownloading: true,
+  newTaskShowDownloading: config.newTaskShowDownloading !== false,
 })
 
 const dialogTop = computed(() => showAdvanced.value ? '8vh' : '12vh')
@@ -101,7 +101,7 @@ async function loadTorrentFromPath(filePath: string) {
   try {
     const bytes = await readFile(filePath)
     const uint8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes)
-    torrentName.value = filePath.split('/').pop() || 'unknown.torrent'
+    torrentName.value = filePath.substring(Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\')) + 1) || 'unknown.torrent'
     torrentBase64.value = uint8ToBase64(uint8)
     torrentLoaded.value = true
     await parseTorrentData(uint8)
@@ -199,9 +199,11 @@ async function handleSubmit() {
       }
       if (form.value.userAgent) options['user-agent'] = form.value.userAgent
       if (form.value.referer) options.referer = form.value.referer
-      if (form.value.cookie) options.header = `Cookie: ${form.value.cookie}`
+      const headers: string[] = []
+      if (form.value.cookie) headers.push(`Cookie: ${form.value.cookie}`)
+      if (form.value.authorization) headers.push(`Authorization: ${form.value.authorization}`)
+      if (headers.length > 0) options.header = headers
       if (form.value.allProxy) options['all-proxy'] = form.value.allProxy
-      if (form.value.authorization) options.header = `Authorization: ${form.value.authorization}`
       await taskStore.addUri({ uris, outs: [], options })
     } else if (activeTab.value === ADD_TASK_TYPE.TORRENT && torrentBase64.value) {
       const options: Record<string, unknown> = { dir: form.value.dir }
@@ -224,6 +226,7 @@ async function handleSubmit() {
 }
 
 function handleHotkey(event: KeyboardEvent) {
+  if (!props.show) return
   if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
     event.preventDefault()
     handleSubmit()

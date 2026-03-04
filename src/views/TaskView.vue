@@ -6,6 +6,7 @@ import { useAppStore } from '@/stores/app'
 import { usePreferenceStore } from '@/stores/preference'
 import { getTaskUri, getTaskName } from '@shared/utils'
 import { remove, stat } from '@tauri-apps/plugin-fs'
+import { revealItemInDir } from '@tauri-apps/plugin-opener'
 import aria2Api from '@/api/aria2'
 import { useDialog, useMessage, NCheckbox } from 'naive-ui'
 import TaskList from '@/components/task/TaskList.vue'
@@ -32,20 +33,24 @@ const title = computed(() => {
   return sub?.title ?? props.status
 })
 
-let refreshInterval: ReturnType<typeof setInterval> | null = null
+let refreshTimer: ReturnType<typeof setTimeout> | null = null
 
 function startPolling() {
   stopPolling()
-  refreshInterval = setInterval(() => {
-    taskStore.fetchList().catch(console.error)
-    appStore.fetchGlobalStat(aria2Api).catch(console.error)
-  }, 500)
+  function tick() {
+    Promise.all([
+      taskStore.fetchList(),
+      appStore.fetchGlobalStat(aria2Api),
+    ]).catch(console.error)
+    refreshTimer = setTimeout(tick, appStore.interval)
+  }
+  tick()
 }
 
 function stopPolling() {
-  if (refreshInterval) {
-    clearInterval(refreshInterval)
-    refreshInterval = null
+  if (refreshTimer) {
+    clearTimeout(refreshTimer)
+    refreshTimer = null
   }
 }
 
@@ -71,7 +76,8 @@ async function deleteTaskFiles(task: Record<string, unknown>) {
   if (dir) {
     const taskName = getTaskName(task as never, { defaultName: '', maxLen: -1 })
     if (taskName) {
-      const taskDir = dir.endsWith('/') ? dir + taskName : dir + '/' + taskName
+      const { join } = await import('@tauri-apps/api/path')
+      const taskDir = await join(dir, taskName)
       try { await remove(taskDir, { recursive: true }) } catch {}
     }
   }
@@ -118,6 +124,16 @@ function handleCopyLink(task: Record<string, unknown>) {
 function handleShowInfo(task: Record<string, unknown>) {
   taskStore.showTaskDetail(task as never)
 }
+async function handleShowInFolder(task: Record<string, unknown>) {
+  const files = (task.files || []) as { path: string }[]
+  const filePath = files[0]?.path
+  if (!filePath) return
+  try {
+    await revealItemInDir(filePath)
+  } catch {
+    message.warning(t('task.file-not-exist'))
+  }
+}
 </script>
 
 <template>
@@ -134,6 +150,7 @@ function handleShowInfo(task: Record<string, unknown>) {
         @delete-record="handleDeleteRecord"
         @copy-link="handleCopyLink"
         @show-info="handleShowInfo"
+        @folder="handleShowInFolder"
       />
     </div>
     <TaskDetail
