@@ -85,17 +85,6 @@ function onDeleteAll() {
               const taskDir = await join(dir, name)
               try { await remove(taskDir, { recursive: true }) } catch {}
             }
-            try {
-              const { readDir } = await import('@tauri-apps/plugin-fs')
-              const entries = await readDir(dir)
-              for (const entry of entries) {
-                if (entry.name.endsWith('.aria2')) {
-                  const { join } = await import('@tauri-apps/api/path')
-                  const fullPath = await join(dir, entry.name)
-                  try { await remove(fullPath) } catch {}
-                }
-              }
-            } catch {}
           }
         }
       }

@@ -8,6 +8,7 @@ import { usePreferenceStore } from '@/stores/preference'
 import { ADD_TASK_TYPE } from '@shared/constants'
 import { isEngineReady } from '@/api/aria2'
 import { detectResource, bytesToSize } from '@shared/utils'
+import { buildOuts } from '@shared/utils/rename'
 import { open as openDialog } from '@tauri-apps/plugin-dialog'
 import { downloadDir } from '@tauri-apps/api/path'
 import { readFile } from '@tauri-apps/plugin-fs'
@@ -252,7 +253,9 @@ async function handleSubmit() {
       if (form.value.authorization) headers.push(`Authorization: ${form.value.authorization}`)
       if (headers.length > 0) options.header = headers
       if (form.value.allProxy) options['all-proxy'] = form.value.allProxy
-      await taskStore.addUri({ uris, outs: [], options })
+      const outs = form.value.out ? buildOuts(uris, form.value.out) : []
+      if (outs.length > 0) delete options.out
+      await taskStore.addUri({ uris, outs, options })
     } else if (activeTab.value === ADD_TASK_TYPE.TORRENT && torrentBase64.value) {
       if (torrentInfoHash.value && isEngineReady()) {
         const { getClient } = await import('@/api/aria2')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { TASK_STATUS } from '@shared/constants'
 import {
@@ -52,6 +52,10 @@ function switchTab(key: string) {
 }
 
 const isBT = computed(() => props.task ? checkTaskIsBT(props.task as never) : false)
+
+watch(() => props.task, () => {
+  activeTab.value = 'general'
+})
 const isSeeder = computed(() => props.task ? checkTaskIsSeeder(props.task as never) : false)
 const taskStatusKey = computed(() => isSeeder.value ? TASK_STATUS.SEEDING : (props.task?.status as string))
 const taskStatus = computed(() => {

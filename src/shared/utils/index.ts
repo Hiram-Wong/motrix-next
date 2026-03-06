@@ -49,7 +49,8 @@ export const extractSpeedUnit = (speed = ''): string => {
 }
 
 export const bitfieldToPercent = (text: string): string => {
-    const len = text.length - 1
+    const len = text.length
+    if (len === 0) return '0'
     let p: number
     let one = 0
     for (let i = 0; i < len; i++) {
@@ -71,9 +72,41 @@ export const bitfieldToGraphic = (text: string): string => {
     return result
 }
 
+const PEER_CLIENT_MAP: Record<string, string> = {
+    'AG': 'Ares', 'A~': 'Ares', 'AR': 'Arctic', 'AV': 'Avicora',
+    'AX': 'BitPump', 'AZ': 'Azureus', 'BB': 'BitBuddy', 'BC': 'BitComet',
+    'BF': 'Bitflu', 'BG': 'BTG', 'BR': 'BitRocket', 'BS': 'BTSlave',
+    'BX': 'Bittorrent X', 'CD': 'Enhanced CTorrent', 'CT': 'CTorrent',
+    'DE': 'DelugeTorrent', 'DP': 'Propagate', 'EB': 'EBit',
+    'ES': 'electric sheep', 'FT': 'FoxTorrent', 'FW': 'FrostWire',
+    'GS': 'GSTorrent', 'HL': 'Halite', 'HN': 'Hydranode',
+    'KG': 'KGet', 'KT': 'KTorrent', 'LH': 'LH-ABC', 'LP': 'Lphant',
+    'LT': 'libtorrent', 'lt': 'libTorrent', 'LW': 'LimeWire',
+    'MO': 'MonoTorrent', 'MP': 'MooPolice', 'MR': 'Miro',
+    'MT': 'MoonlightTorrent', 'NX': 'Net Transport', 'PD': 'Pando',
+    'qB': 'qBittorrent', 'QD': 'QQDownload', 'QT': 'Qt 4 Torrent',
+    'RT': 'Retriever', 'S~': 'Shareaza alpha/beta', 'SB': 'Swiftbit',
+    'SS': 'SwarmScope', 'ST': 'SymTorrent', 'st': 'sharktorrent',
+    'SZ': 'Shareaza', 'TN': 'TorrentDotNET', 'TR': 'Transmission',
+    'TS': 'Torrentstorm', 'TT': 'TuoTu', 'UL': 'uLeecher!',
+    'UM': 'µTorrent Mac', 'UT': 'µTorrent', 'VG': 'Vagaa',
+    'WD': 'WebTorrent Desktop', 'WT': 'BitLet', 'WW': 'WebTorrent',
+    'WY': 'FireTorrent', 'XL': 'Xunlei', 'XT': 'XanTorrent',
+    'XX': 'Xtorrent', 'ZT': 'ZipTorrent',
+}
+
 export const peerIdParser = (str: string): string => {
     if (!str || str === UNKNOWN_PEERID) {
         return UNKNOWN_PEERID_NAME
+    }
+    if (str.startsWith('-') && str.length >= 8) {
+        const clientId = str.substring(1, 3)
+        const versionRaw = str.substring(3, 7)
+        const clientName = PEER_CLIENT_MAP[clientId]
+        if (clientName) {
+            const version = versionRaw.replace(/-+$/, '').split('').join('.')
+            return `${clientName} ${version}`
+        }
     }
     return UNKNOWN_PEERID_NAME
 }
@@ -539,7 +572,7 @@ export const cloneArray = <T>(arr: T[] = [], reversed = false): T[] => {
 }
 
 export const pushItemToFixedLengthArray = <T>(arr: T[] = [], maxLength: number, item: T): T[] => {
-    return arr.length >= maxLength ? [...arr.slice(1, maxLength - 1), item] : [...arr, item]
+    return arr.length >= maxLength ? [...arr.slice(1), item] : [...arr, item]
 }
 
 export const removeArrayItem = <T>(arr: T[] = [], item: T): T[] => {

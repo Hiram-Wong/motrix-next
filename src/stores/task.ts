@@ -84,8 +84,13 @@ export const useTaskStore = defineStore('task', () => {
             const gids = data.map((task) => task.gid)
             selectedGidList.value = intersection(selectedGidList.value, gids)
             if (taskDetailVisible.value && currentTaskGid.value) {
-                const fresh = data.find((t) => t.gid === currentTaskGid.value)
-                if (fresh) updateCurrentTaskItem(fresh)
+                try {
+                    const fresh = await api.fetchTaskItemWithPeers({ gid: currentTaskGid.value })
+                    if (fresh) updateCurrentTaskItem(fresh)
+                } catch {
+                    const fresh = data.find((t) => t.gid === currentTaskGid.value)
+                    if (fresh) updateCurrentTaskItem(fresh)
+                }
             }
 
         } catch (e) {
