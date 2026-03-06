@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, h, onMounted } from 'vue'
+import { ref, computed, h, onMounted, watchSyncEffect, onUnmounted } from 'vue'
+import { isEqual } from 'lodash-es'
 import { invoke } from '@tauri-apps/api/core'
 import { useI18n } from 'vue-i18n'
 import { usePreferenceStore } from '@/stores/preference'
@@ -92,6 +93,15 @@ function generateSecret(): string {
 }
 
 const form = ref(buildForm())
+const savedSnapshot = ref(JSON.parse(JSON.stringify(buildForm())))
+
+const isDirty = computed(() => !isEqual(
+  JSON.parse(JSON.stringify(form.value)),
+  savedSnapshot.value
+))
+
+watchSyncEffect(() => { preferenceStore.pendingChanges = isDirty.value })
+onUnmounted(() => { preferenceStore.pendingChanges = false })
 
 function buildForm() {
   const c = (preferenceStore.config || {}) as Record<string, unknown>
@@ -222,6 +232,7 @@ function handleSave() {
     message.error(t('preferences.rpc-secret-empty-warning'))
     return
   }
+  savedSnapshot.value = JSON.parse(JSON.stringify(form.value))
   const data: Record<string, unknown> = {
     ...form.value,
     btTracker: convertLineToComma(form.value.btTracker),
@@ -246,6 +257,7 @@ function handleSave() {
 
 function handleReset() {
   loadForm()
+  savedSnapshot.value = JSON.parse(JSON.stringify(form.value))
 }
 
 onMounted(() => {
@@ -403,8 +415,8 @@ onMounted(() => {
     </NForm>
     <div class="form-actions">
       <NSpace>
-        <NButton type="primary" @click="handleSave">{{ t('preferences.save') }}</NButton>
-        <NButton @click="handleReset">{{ t('preferences.discard') }}</NButton>
+        <NButton :class="{ 'save-btn-dirty': isDirty }" type="primary" @click="handleSave">{{ t('preferences.save') }}</NButton>
+        <NButton :class="{ 'discard-btn-dirty': isDirty }" @click="handleReset">{{ t('preferences.discard') }}</NButton>
       </NSpace>
     </div>
   </div>
@@ -450,5 +462,28 @@ onMounted(() => {
   bottom: 0;
   z-index: 10;
   padding: 16px 24px 16px 40px;
+}
+.save-btn-dirty {
+  background-color: #18a058 !important;
+  border: none !important;
+  transition: background-color 0.35s cubic-bezier(0.2, 0, 0, 1);
+}
+.save-btn-dirty :deep(.n-button__border) {
+  border: none !important;
+}
+.save-btn-dirty :deep(.n-button__state-border) {
+  border: none !important;
+}
+.discard-btn-dirty {
+  background-color: rgba(208, 48, 80, 0.85) !important;
+  border: none !important;
+  color: #fff !important;
+  transition: background-color 0.35s cubic-bezier(0.2, 0, 0, 1), color 0.35s cubic-bezier(0.2, 0, 0, 1);
+}
+.discard-btn-dirty :deep(.n-button__border) {
+  border: none !important;
+}
+.discard-btn-dirty :deep(.n-button__state-border) {
+  border: none !important;
 }
 </style>

@@ -14,6 +14,7 @@ const STORE_KEY = 'preferences'
 
 export const usePreferenceStore = defineStore('preference', () => {
     const engineMode = ref('MAX')
+    const pendingChanges = ref(false)
     const config = ref<Record<string, unknown>>({ theme: 'dark' })
 
     const theme = computed(() => config.value.theme as string | undefined)
@@ -127,6 +128,7 @@ export const usePreferenceStore = defineStore('preference', () => {
 
     return {
         engineMode,
+        pendingChanges,
         config,
         theme,
         locale,

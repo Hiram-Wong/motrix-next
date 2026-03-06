@@ -17,10 +17,11 @@ import AboutPanel from '@/components/about/AboutPanel.vue'
 import AddTask from '@/components/task/AddTask.vue'
 import UpdateDialog from '@/components/preference/UpdateDialog.vue'
 import { useTaskStore } from '@/stores/task'
+import { usePreferenceStore } from '@/stores/preference'
 import { openUrl } from '@tauri-apps/plugin-opener'
 import { open as openDialog } from '@tauri-apps/plugin-dialog'
 import {
-  NModal, NCard, NButton, NSpace, NIcon,
+  NModal, NCard, NButton, NSpace, NIcon, useDialog,
 } from 'naive-ui'
 import { WarningOutline } from '@vicons/ionicons5'
 
@@ -29,6 +30,8 @@ const route = useRoute()
 const router = useRouter()
 const appStore = useAppStore()
 const taskStore = useTaskStore()
+const preferenceStore = usePreferenceStore()
+const navDialog = useDialog()
 
 const isTaskPage = computed(() => route.path.startsWith('/task'))
 const isPreferencePage = computed(() => route.path.startsWith('/preference'))
@@ -67,6 +70,28 @@ function handleExitCancel() {
 
 onMounted(async () => {
   setTimeout(() => { appReady.value = true }, 120)
+
+  router.beforeEach((to, from) => {
+    const leavingPrefs = from.path.startsWith('/preference') && !to.path.startsWith('/preference')
+    if (leavingPrefs && preferenceStore.pendingChanges) {
+      return new Promise<boolean>((resolve) => {
+        navDialog.warning({
+          title: t('preferences.not-saved'),
+          content: t('preferences.not-saved-confirm'),
+          positiveText: t('app.yes'),
+          negativeText: t('app.no'),
+          onPositiveClick: () => {
+            preferenceStore.pendingChanges = false
+            resolve(true)
+          },
+          onNegativeClick: () => { resolve(false) },
+          onClose: () => { resolve(false) },
+          onMaskClick: () => { resolve(false) },
+        })
+      })
+    }
+    return true
+  })
 
   const webview = getCurrentWebview()
   unlistenDragDrop = await webview.onDragDropEvent((event) => {

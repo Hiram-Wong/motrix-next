@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watchSyncEffect, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { isEqual } from 'lodash-es'
 import { usePreferenceStore } from '@/stores/preference'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { open as openDialog } from '@tauri-apps/plugin-dialog'
@@ -69,6 +70,15 @@ function buildForm() {
 }
 
 const form = ref(buildForm())
+const savedSnapshot = ref(JSON.parse(JSON.stringify(buildForm())))
+
+const isDirty = computed(() => !isEqual(
+  JSON.parse(JSON.stringify(form.value)),
+  savedSnapshot.value
+))
+
+watchSyncEffect(() => { preferenceStore.pendingChanges = isDirty.value })
+onUnmounted(() => { preferenceStore.pendingChanges = false })
 
 const uploadSpeedValue = ref(0)
 const uploadUnit = ref('K')
@@ -178,6 +188,7 @@ function loadForm() {
 function handleSave() {
   const prevLocale = preferenceStore.locale || 'en-US'
   const newLocale = form.value.locale
+  savedSnapshot.value = JSON.parse(JSON.stringify(form.value))
 
   const data: Record<string, unknown> = { ...form.value }
 
@@ -221,6 +232,7 @@ function handleSave() {
 
 function handleReset() {
   loadForm()
+  savedSnapshot.value = JSON.parse(JSON.stringify(form.value))
 }
 
 function handleCheckUpdate() {
@@ -375,8 +387,8 @@ onMounted(async () => {
     </NForm>
     <div class="form-actions">
       <NSpace>
-        <NButton type="primary" @click="handleSave">{{ t('preferences.save') }}</NButton>
-        <NButton @click="handleReset">{{ t('preferences.discard') }}</NButton>
+        <NButton :class="{ 'save-btn-dirty': isDirty }" type="primary" @click="handleSave">{{ t('preferences.save') }}</NButton>
+        <NButton :class="{ 'discard-btn-dirty': isDirty }" @click="handleReset">{{ t('preferences.discard') }}</NButton>
       </NSpace>
     </div>
   </div>
@@ -404,5 +416,28 @@ onMounted(async () => {
   bottom: 0;
   z-index: 10;
   padding: 16px 24px 16px 40px;
+}
+.save-btn-dirty {
+  background-color: #18a058 !important;
+  border: none !important;
+  transition: background-color 0.35s cubic-bezier(0.2, 0, 0, 1);
+}
+.save-btn-dirty :deep(.n-button__border) {
+  border: none !important;
+}
+.save-btn-dirty :deep(.n-button__state-border) {
+  border: none !important;
+}
+.discard-btn-dirty {
+  background-color: rgba(208, 48, 80, 0.85) !important;
+  border: none !important;
+  color: #fff !important;
+  transition: background-color 0.35s cubic-bezier(0.2, 0, 0, 1), color 0.35s cubic-bezier(0.2, 0, 0, 1);
+}
+.discard-btn-dirty :deep(.n-button__border) {
+  border: none !important;
+}
+.discard-btn-dirty :deep(.n-button__state-border) {
+  border: none !important;
 }
 </style>
