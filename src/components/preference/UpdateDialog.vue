@@ -1,5 +1,6 @@
 <script setup lang="ts">
 /** @fileoverview Application update notification dialog with channel support. */
+import { marked } from 'marked'
 import { ref, computed, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NModal, NButton, NSpace, NProgress, NIcon, NText, NSpin, NTag } from 'naive-ui'
@@ -37,6 +38,10 @@ const phase = ref<'checking' | 'up-to-date' | 'available' | 'downloading' | 'rea
 const version = ref('')
 const currentVersion = ref('')
 const releaseNotes = ref('')
+const renderedNotes = computed(() => {
+  if (!releaseNotes.value) return ''
+  return marked.parse(releaseNotes.value, { async: false }) as string
+})
 const errorMsg = ref('')
 const downloadTotal = ref(0)
 const downloadReceived = ref(0)
@@ -193,7 +198,7 @@ defineExpose({ open })
               </div>
             </div>
             <div v-if="releaseNotes" class="update-notes">
-              <NText depth="3" class="update-notes-text">{{ releaseNotes }}</NText>
+              <div class="update-notes-text" v-html="renderedNotes" />
             </div>
             <NButton type="primary" style="min-width: 180px" @click="startDownload">
               {{ t('preferences.update-and-install') }}
@@ -379,14 +384,35 @@ defineExpose({ open })
   background: rgba(255, 255, 255, 0.04);
   border-radius: 8px;
   padding: 10px 14px;
-  max-height: 88px;
+  max-height: 120px;
   overflow-y: auto;
 }
 .update-notes-text {
   font-size: 12.5px;
   line-height: 1.6;
-  white-space: pre-wrap;
   opacity: 0.65;
+  color: var(--n-text-color, #ccc);
+}
+.update-notes-text :deep(h2) {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.update-notes-text :deep(h3) {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin: 6px 0 2px;
+}
+.update-notes-text :deep(p) {
+  margin: 2px 0;
+}
+.update-notes-text :deep(ul),
+.update-notes-text :deep(ol) {
+  margin: 2px 0;
+  padding-left: 18px;
+}
+.update-notes-text :deep(li) {
+  margin: 1px 0;
 }
 
 .update-error-detail {
