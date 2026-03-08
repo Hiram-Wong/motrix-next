@@ -196,4 +196,7 @@ function openUrl(url: string) {
 .about-link:hover {
   text-decoration: underline;
 }
+:deep(.n-divider .n-divider__line) {
+  background-color: var(--m3-outline-variant) !important;
+}
 </style>
