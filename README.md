@@ -9,7 +9,7 @@
   <br>
   ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue.svg)
   ![License](https://img.shields.io/github/license/AnInsomniacy/motrix-next.svg)
-  ![Bundle Size](https://img.shields.io/badge/bundle%20size-~10MB-brightgreen.svg)
+  ![Bundle Size](https://img.shields.io/badge/bundle%20size-~20MB-brightgreen.svg)
 
   [![Website](https://img.shields.io/badge/Website-E0A422?style=for-the-badge&logo=safari&logoColor=white)](https://motrix-next.pages.dev)
   [![Download](https://img.shields.io/badge/Download-2b2b2b?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIxIDE1djRhMiAyIDAgMCAxLTIgMkg1YTIgMiAwIDAgMS0yLTJ2LTQiLz48cG9seWxpbmUgcG9pbnRzPSI3IDEwIDEyIDE1IDE3IDEwIi8+PGxpbmUgeDE9IjEyIiB5MT0iMTUiIHgyPSIxMiIgeTI9IjMiLz48L3N2Zz4=&logoColor=white)](https://github.com/AnInsomniacy/motrix-next/releases)
@@ -48,7 +48,7 @@ We owe a great deal to the original [Motrix](https://github.com/agalwood/Motrix)
 | **Styling** | SCSS + Element theme | **Vanilla CSS + custom properties** |
 | **Engine Mgmt** | Node.js `child_process` | **Tauri sidecar** |
 | **Build System** | electron-builder | **Vite + Cargo** |
-| **Bundle Size** | ~80 MB | **~10 MB** |
+| **Bundle Size** | ~80 MB | **~20 MB** |
 | **Auto-Update** | electron-updater | **Tauri updater plugin** |
 
 
@@ -82,6 +82,19 @@ What changed is everything underneath. Every transition and micro-interaction ha
 ## Installation
 
 Download the latest release from [GitHub Releases](https://github.com/AnInsomniacy/motrix-next/releases).
+
+### macOS Users
+
+> This app is not code-signed — built by a PhD student, not a corporation.
+> (See my [GitHub profile](https://github.com/AnInsomniacy) for what I actually research.)
+>
+> If macOS says the app is **"damaged and can't be opened"**, open Terminal and run:
+>
+> ```bash
+> xattr -cr /Applications/Motrix\ Next.app
+> ```
+>
+> This removes the quarantine flag that macOS Gatekeeper applies to unsigned apps.
 
 ## Development
 
