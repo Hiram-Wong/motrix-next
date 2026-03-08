@@ -42,16 +42,16 @@ const { t } = useI18n()
   border-color: var(--m3-success) !important;
 }
 .discard-btn-dirty {
-  background-color: rgba(208, 48, 80, 0.85) !important;
-  color: var(--m3-on-success) !important;
+  background-color: var(--m3-error) !important;
+  color: var(--m3-on-error) !important;
   transition:
     background-color 0.35s cubic-bezier(0.2, 0, 0, 1),
     color 0.35s cubic-bezier(0.2, 0, 0, 1);
 }
 .discard-btn-dirty :deep(.n-button__border) {
-  border-color: rgba(208, 48, 80, 0.85) !important;
+  border-color: var(--m3-error) !important;
 }
 .discard-btn-dirty :deep(.n-button__state-border) {
-  border-color: rgba(208, 48, 80, 0.85) !important;
+  border-color: var(--m3-error) !important;
 }
 </style>

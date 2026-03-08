@@ -431,7 +431,7 @@ defineExpose({ open })
   opacity: 0.7;
 }
 .version-new {
-  background: rgba(224, 164, 34, 0.15);
+  background: var(--m3-primary-container-bg);
   color: var(--color-primary);
 }
 .version-arrow {
@@ -483,7 +483,7 @@ defineExpose({ open })
 
 .update-error-detail {
   width: 100%;
-  background: rgba(232, 128, 128, 0.06);
+  background: var(--m3-error-container-bg);
   border-radius: 8px;
   padding: 10px 14px;
   max-height: 72px;

@@ -56,8 +56,34 @@ const rowCount = computed(() => Math.ceil(len.value / columnCount.value))
 const canvasWidth = computed(() => atomWG.value * (columnCount.value - 1) + props.atomWidth)
 const canvasHeight = computed(() => atomHG.value * (rowCount.value - 1) + props.atomHeight)
 
-const statusColors = ['#2a2a2a', '#3a5a3a', '#4a8a4a', '#5aba5a', '#67C23A']
-const strokeColor = '#333'
+/** Reads a CSS variable from :root. */
+function cssVar(name: string, fallback: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback
+}
+
+/** Status gradient: inactive → fully active (5 levels), derived from M3 tokens. */
+function getStatusColors(): string[] {
+  const surface = cssVar('--m3-surface-container', '#2a2a2a')
+  const success = cssVar('--m3-status-success', '#67C23A')
+  return [
+    surface,
+    mixHex(surface, success, 0.25),
+    mixHex(surface, success, 0.5),
+    mixHex(surface, success, 0.75),
+    success,
+  ]
+}
+
+/** Simple hex color lerp for Canvas 2D (which cannot parse CSS color-mix). */
+function mixHex(a: string, b: string, t: number): string {
+  const pa = [parseInt(a.slice(1, 3), 16), parseInt(a.slice(3, 5), 16), parseInt(a.slice(5, 7), 16)]
+  const pb = [parseInt(b.slice(1, 3), 16), parseInt(b.slice(3, 5), 16), parseInt(b.slice(5, 7), 16)]
+  const r = Math.round(pa[0] + (pb[0] - pa[0]) * t)
+  const g = Math.round(pa[1] + (pb[1] - pa[1]) * t)
+  const bl = Math.round(pa[2] + (pb[2] - pa[2]) * t)
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${bl.toString(16).padStart(2, '0')}`
+}
+const strokeColor = computed(() => cssVar('--m3-outline-variant', '#333'))
 
 // Track previous status for fade-in animation
 const prevStatus = ref<number[]>([])
@@ -102,7 +128,8 @@ function draw() {
     const wasInactive = prevStatus.value.length > 0 && (prevStatus.value[i] || 0) === 0
     const justActivated = wasInactive && status > 0
 
-    ctx.fillStyle = statusColors[status] || statusColors[0]
+    const colors = getStatusColors()
+    ctx.fillStyle = colors[status] || colors[0]
     ctx.globalAlpha = status > 0 ? 1.0 : 0.5
 
     // Draw rounded rect
@@ -120,7 +147,7 @@ function draw() {
     ctx.fill()
 
     // Subtle stroke
-    ctx.strokeStyle = strokeColor
+    ctx.strokeStyle = strokeColor.value
     ctx.lineWidth = 0.5
     ctx.globalAlpha = status > 0 ? 0.6 : 0.3
     ctx.stroke()
@@ -128,7 +155,7 @@ function draw() {
     // Glow for newly activated pieces
     if (justActivated) {
       ctx.globalAlpha = 0.3
-      ctx.fillStyle = '#67C23A'
+      ctx.fillStyle = cssVar('--m3-status-success', '#67C23A')
       ctx.fill()
     }
   }

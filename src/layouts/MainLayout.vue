@@ -281,7 +281,7 @@ onUnmounted(() => {
       "
     >
       <div class="exit-dialog-body">
-        <NIcon :size="22" color="#e8a838" style="margin-right: 8px; flex-shrink: 0">
+        <NIcon :size="22" color="var(--color-primary)" style="margin-right: 8px; flex-shrink: 0">
           <WarningOutline />
         </NIcon>
         <span>{{ t('app.confirm-exit-message') }}</span>

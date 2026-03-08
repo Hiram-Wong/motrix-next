@@ -29,9 +29,9 @@ defineEmits<{
             {{ name }}
           </NTooltip>
           <NButton quaternary size="small" type="error" @click="$emit('clear')">
-            <template #icon
-              ><NIcon :size="16"><TrashOutline /></NIcon
-            ></template>
+            <template #icon>
+              <NIcon :size="16"><TrashOutline /></NIcon>
+            </template>
           </NButton>
         </div>
         <slot name="file-list" />
@@ -76,7 +76,7 @@ defineEmits<{
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border: 1px dashed var(--m3-drop-zone-border);
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.2s cubic-bezier(0.2, 0, 0, 1);
@@ -89,9 +89,9 @@ defineEmits<{
   align-items: center;
   justify-content: space-between;
   padding: 8px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--m3-drop-zone-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--m3-drop-zone-bg);
   margin-bottom: 10px;
 }
 .torrent-filename {

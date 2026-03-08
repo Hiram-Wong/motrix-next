@@ -79,26 +79,43 @@ const remainingText = computed(() => {
   })
 })
 
-const statusColorMap: Record<string, string> = {
-  active: '#E0A422',
-  waiting: '#E6A23C',
-  paused: '#909399',
-  error: '#F56C6C',
-  complete: '#67C23A',
-  removed: '#909399',
-  seeding: '#67C23A',
+/** Reads a CSS variable from :root, returning the fallback if unavailable. */
+function cssVar(name: string, fallback: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback
 }
 
-const progressColor = computed(() => statusColorMap[taskStatus.value] || '#E0A422')
+const statusColorMap = computed<Record<string, string>>(() => ({
+  active: cssVar('--m3-status-active', '#E0A422'),
+  waiting: cssVar('--m3-status-waiting', '#E6A23C'),
+  paused: cssVar('--m3-status-paused', '#909399'),
+  error: cssVar('--m3-status-error', '#F56C6C'),
+  complete: cssVar('--m3-status-success', '#67C23A'),
+  removed: cssVar('--m3-status-paused', '#909399'),
+  seeding: cssVar('--m3-status-success', '#67C23A'),
+}))
+
+const progressColor = computed(() => statusColorMap.value[taskStatus.value] || cssVar('--m3-status-active', '#E0A422'))
 
 const finishedTag = computed(() => {
   const s = props.task.status
   if (s === TASK_STATUS.COMPLETE)
-    return { label: t('task.task-complete') || 'Completed', color: '#67C23A', icon: CheckmarkCircleOutline }
+    return {
+      label: t('task.task-complete') || 'Completed',
+      color: cssVar('--m3-status-success', '#67C23A'),
+      icon: CheckmarkCircleOutline,
+    }
   if (s === TASK_STATUS.ERROR)
-    return { label: t('task.task-error') || 'Error', color: '#F56C6C', icon: AlertCircleOutline }
+    return {
+      label: t('task.task-error') || 'Error',
+      color: cssVar('--m3-status-error', '#F56C6C'),
+      icon: AlertCircleOutline,
+    }
   if (s === TASK_STATUS.REMOVED)
-    return { label: t('task.task-removed') || 'Removed', color: '#909399', icon: TrashOutline }
+    return {
+      label: t('task.task-removed') || 'Removed',
+      color: cssVar('--m3-status-paused', '#909399'),
+      icon: TrashOutline,
+    }
   return null
 })
 
@@ -264,7 +281,7 @@ watch(() => props.task.status, checkFileExists)
   }
 }
 .task-item.file-missing {
-  border-color: rgba(232, 128, 128, 0.2);
+  border-color: var(--m3-error-container-bg);
 }
 .task-progress-info {
   display: flex;

@@ -57,6 +57,22 @@
   /* ── M3 Shadow ─────────────────────────────────────────────────── */
   --m3-shadow: rgba(0, 0, 0, 0.15);
 
+  /* ── M3 Status Colors (semantic) ────────────────────────────────── */
+  --m3-status-active: #7c5800;
+  --m3-status-waiting: #7c5800;
+  --m3-status-paused: #7f7667;
+  --m3-status-error: #ba1a1a;
+  --m3-status-success: #386a20;
+
+  /* ── M3 Container Backgrounds (tinted surfaces) ────────────────── */
+  --m3-primary-container-bg: rgba(124, 88, 0, 0.1);
+  --m3-error-container-bg: rgba(186, 26, 26, 0.08);
+
+  /* ── M3 Drop Zone ──────────────────────────────────────────────── */
+  --m3-drop-zone-border: var(--m3-outline-variant);
+  --m3-drop-zone-active-border: var(--m3-primary);
+  --m3-drop-zone-bg: color-mix(in srgb, var(--m3-on-surface) 4%, transparent);
+
   /* ── Brand Color (backward-compatible) ─────────────────────────── */
   --color-primary: #e0a422;
   --color-primary-hover: #c89319;
@@ -186,6 +202,17 @@
 
   /* ── M3 Shadow ─────────────────────────────────────────────────── */
   --m3-shadow: rgba(0, 0, 0, 0.5);
+
+  /* ── M3 Status Colors (semantic — lighter in dark) ──────────────── */
+  --m3-status-active: #f0bf48;
+  --m3-status-waiting: #f0bf48;
+  --m3-status-paused: #998f80;
+  --m3-status-error: #ffb4ab;
+  --m3-status-success: #8edb6a;
+
+  /* ── M3 Container Backgrounds (tinted surfaces — dark) ─────────── */
+  --m3-primary-container-bg: rgba(240, 191, 72, 0.12);
+  --m3-error-container-bg: rgba(255, 180, 171, 0.08);
 
   /* ── Brand Color (consistent across themes) ────────────────────── */
   --color-primary-light-5: #5e4200;
