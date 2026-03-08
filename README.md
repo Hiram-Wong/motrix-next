@@ -96,6 +96,18 @@ Download the latest release from [GitHub Releases](https://github.com/AnInsomnia
 >
 > This removes the quarantine flag that macOS Gatekeeper applies to unsigned apps.
 
+### Why No Portable Version?
+
+Motrix Next relies on [aria2](https://aria2.github.io/) as a sidecar process — a separate executable that Tauri launches at runtime. This architecture means:
+
+- The **aria2 binary must exist alongside the main executable** — it cannot be embedded into a single `.exe`.
+- **Deep links** (`magnet://`, `thunder://`) and **file associations** (`.torrent`) require Windows registry entries that only an installer can configure.
+- The **auto-updater** needs a known installation path to replace files in place.
+
+These are fundamental constraints of the Tauri sidecar model and the Windows operating system, not limitations we can work around. Notable Tauri projects like [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) (80k+ stars) previously shipped portable builds but [discontinued them](https://clash-verge.com/) due to the same set of issues.
+
+We provide **NSIS installers** for Windows — lightweight (~20 MB), fast to install, and fully featured.
+
 ## Development
 
 ### Prerequisites
