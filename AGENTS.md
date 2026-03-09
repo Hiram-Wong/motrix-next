@@ -343,7 +343,7 @@ Run these before committing changes:
 # Frontend
 pnpm format                # Auto-format all source files with Prettier
 pnpm format:check          # Verify formatting (CI runs this)
-pnpm test                  # Vitest — 340+ unit tests
+pnpm test                  # Vitest — 370+ unit tests
 npx vue-tsc --noEmit       # TypeScript type checking
 
 # Backend
