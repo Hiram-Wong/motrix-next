@@ -298,8 +298,22 @@ export const useTaskStore = defineStore('task', () => {
       throw new Error('Cannot restart: no download URIs found for this task')
     }
 
+    // Preserve original per-task options (headers, proxy, auth, out, select-file, etc.).
+    // Filter out read-only / non-portable keys that aria2 rejects on addUri.
+    const NON_PORTABLE_KEYS = new Set(['followTorrent', 'followMetalink', 'pauseMetadata', 'gid'])
+
     const options: Record<string, string> = {}
-    if (dir) options.dir = dir
+    try {
+      const orig = await api.getOption({ gid })
+      for (const [k, v] of Object.entries(orig)) {
+        if (!NON_PORTABLE_KEYS.has(k) && v !== '') {
+          options[k] = v
+        }
+      }
+    } catch {
+      // Fallback: at minimum preserve download directory
+      if (dir) options.dir = dir
+    }
 
     // Submit each URI as a separate download, tracking created GIDs for rollback
     const createdGids: string[] = []

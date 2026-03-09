@@ -395,6 +395,7 @@ describe('TaskStore', () => {
       ],
     })
     mockApi.addUriAtomic.mockResolvedValue('new-gid-1')
+    mockApi.getOption.mockResolvedValue({ dir: '/tmp' })
     await store.restartTask(task)
 
     expect(mockApi.addUriAtomic).toHaveBeenCalledTimes(1)
@@ -428,6 +429,7 @@ describe('TaskStore', () => {
       ],
     })
     mockApi.addUriAtomic.mockResolvedValueOnce('new-a').mockResolvedValueOnce('new-b')
+    mockApi.getOption.mockResolvedValue({ dir: '/tmp' })
     await store.restartTask(task)
 
     expect(mockApi.addUriAtomic).toHaveBeenCalledTimes(2)

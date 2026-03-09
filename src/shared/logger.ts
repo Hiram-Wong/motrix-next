@@ -47,7 +47,12 @@ export const logger = {
   /** Logs debug data, suppressed in production. */
   debug(context: string, data?: unknown): void {
     if (currentLevel < LogLevel.DEBUG) return
-    const message = data !== undefined ? JSON.stringify(data) : ''
+    let message = ''
+    if (data instanceof Error) {
+      message = data.stack ?? data.message
+    } else if (data !== undefined) {
+      message = JSON.stringify(data)
+    }
     console.debug(formatMessage('DEBUG', context, message)) // eslint-disable-line no-console
   },
 }

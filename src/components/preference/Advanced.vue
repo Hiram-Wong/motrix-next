@@ -184,6 +184,12 @@ const { form, isDirty, handleSave, handleReset, resetSnapshot } = usePreferenceF
     }
     return true
   },
+  afterSave: (f, prevConfig) => {
+    // Sync UPnP mapping state only after a successful Save.
+    if (f.enableUpnp !== prevConfig.enableUpnp) {
+      syncUpnpState(!!f.enableUpnp, f.listenPort, f.dhtListenPort)
+    }
+  },
 })
 
 function buildForm() {
@@ -276,22 +282,18 @@ function onDhtPortDice() {
   form.value.dhtListenPort = generateRandomInt(25000, 29999)
 }
 
-// ─── UPnP Toggle & Port Re-mapping ───────────────────────────────────
+// ─── UPnP Save-time Sync ─────────────────────────────────────────────
 
-/** Immediately start or stop UPnP port mapping when the toggle is flipped. */
-async function handleUpnpToggle(enabled: boolean) {
+/** Sync UPnP port-mapping state after preferences are saved. */
+async function syncUpnpState(enabled: boolean, btPort: number, dhtPort: number) {
   try {
-    const { invoke } = await import('@tauri-apps/api/core')
     if (enabled) {
-      await invoke('start_upnp_mapping', {
-        btPort: form.value.listenPort,
-        dhtPort: form.value.dhtListenPort,
-      })
+      await invoke('start_upnp_mapping', { btPort, dhtPort })
     } else {
       await invoke('stop_upnp_mapping')
     }
   } catch (e) {
-    logger.warn('UPnP', `toggle failed: ${e}`)
+    logger.warn('UPnP', `sync failed: ${e}`)
     message.warning(t('preferences.upnp-mapping-failed'))
   }
 }
@@ -476,7 +478,7 @@ onMounted(() => {
 
       <NDivider title-placement="left">{{ t('preferences.port') }}</NDivider>
       <NFormItem label="UPnP/NAT-PMP">
-        <NSwitch v-model:value="form.enableUpnp" @update:value="handleUpnpToggle" />
+        <NSwitch v-model:value="form.enableUpnp" />
       </NFormItem>
       <NFormItem :label="t('preferences.bt-port')">
         <NInputGroup>

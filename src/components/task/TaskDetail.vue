@@ -46,7 +46,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ close: [] }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const activeTab = ref('general')
 const slideDirection = ref<'left' | 'right'>('left')
 const prevTabIndex = ref(0)
@@ -279,7 +279,7 @@ function handleClose() {
                     v-if="btInfo?.creationDate"
                     :label="t('task.task-bittorrent-creation-date') || 'Created'"
                   >
-                    {{ localeDateTimeFormat(Number(btInfo.creationDate), 'en') }}
+                    {{ localeDateTimeFormat(Number(btInfo.creationDate), locale) }}
                   </NDescriptionsItem>
                   <NDescriptionsItem v-if="btInfo?.comment" :label="t('task.task-bittorrent-comment') || 'Comment'">
                     {{ btInfo.comment }}

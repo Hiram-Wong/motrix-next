@@ -45,6 +45,10 @@ function resolveLocale(raw) {
     if (!raw) return null;
     const normalized = raw.trim();
     if (SUPPORTED_LOCALES.includes(normalized)) return normalized;
+    // Region-specific overrides (Traditional Chinese regions → zh-TW)
+    const REGION_MAP = { 'zh-hk': 'zh-TW', 'zh-mo': 'zh-TW', 'zh-tw': 'zh-TW' };
+    const lower = normalized.toLowerCase();
+    if (REGION_MAP[lower]) return REGION_MAP[lower];
     // Try base language match: "zh" → "zh-CN", "pt" → "pt-BR"
     const base = normalized.split('-')[0].toLowerCase();
     const match = SUPPORTED_LOCALES.find(l => l.toLowerCase().startsWith(base));
