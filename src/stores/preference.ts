@@ -44,20 +44,21 @@ export const usePreferenceStore = defineStore('preference', () => {
     }
   }
 
-  async function savePreference() {
+  async function savePreference(): Promise<boolean> {
     try {
       const store = await getStore()
       await store.set(STORE_KEY, config.value)
       await store.save()
+      return true
     } catch (e) {
       logger.error('PreferenceStore.savePreference', e)
-      throw e
+      return false
     }
   }
 
-  async function updateAndSave(cfg: Partial<AppConfig>) {
+  async function updateAndSave(cfg: Partial<AppConfig>): Promise<boolean> {
     config.value = { ...config.value, ...cfg }
-    await savePreference()
+    return savePreference()
   }
 
   function updatePreference(cfg: Partial<AppConfig>) {
